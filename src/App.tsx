@@ -1,12 +1,45 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, View,StatusBar, FlatList, Pressable } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Snackbar from 'react-native-snackbar'
-import Icons from './components/Icons'
+import Icon from './components/Icons'
 import { useState } from 'react'
+import Sound from 'react-native-sound';
 
 
 
-function App() :JSX.Element {
+function App() :J9SX.Element {
+  const [sound] = useState(
+    new Sound('touch.mp3', Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('Failed to load the sound', error);
+      }
+    })
+  );
+
+  const [tapSound] = useState(
+    new Sound('touch.mp3', Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('Failed to load the tap sound', error);
+      }
+    })
+  );
+  const playSound = () => {
+    sound.play((success) => {
+      if (success) {
+        console.log('Sound played successfully');
+      } else {
+        console.log('Failed to play sound');
+      }
+    });
+  };
+
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const toggleSound = () => {
+    setIsSoundEnabled(!isSoundEnabled);
+    if (isSoundEnabled) {
+      playSound();
+    }
+  };
   const [isCross, setIsCross]=useState<boolean>(false)
   const [gameWinner,setGameWinner]=useState<string>("")
 
@@ -37,7 +70,25 @@ function App() :JSX.Element {
       
     } 
   }
-  const checkWinner=()=>{
+  const handlePress = (index: number) => {
+    tapSound.stop(() => {
+      tapSound.play((success) => {
+        if (!success) {
+          console.log('Tap sound playback failed');
+        }
+      });
+    });
+    onChangeItem(index)
+  };
+
+  // Clean up sound resources on unmount
+  useEffect(() => {
+    return () => {
+      tapSound.release();
+      sound.release();
+    };
+  }, [sound]);
+  const checkWinner = () => {
     if(gameState[0]===gameState[1] && gameState[0]===gameState[2] && gameState[0]!=='empty'){
       setGameWinner(`${gameState[0]} won`)
     }
@@ -71,49 +122,134 @@ function App() :JSX.Element {
 
  
   };
+  // Duplicate handlePress function removed
   return (
     <SafeAreaView>
       <StatusBar />
-      {gameWinner ? (
-        <View style={[styles.playerInfo, styles.WinnerInfo]}>
-          <Text style={styles.winnerTxt}>{gameWinner}</Text>
+      <View
+        style={[
+          styles.playerInfo,
+          isCross ? styles.playerX : styles.playerO,
+        ]}
+      >
+        <Text style={styles.gameTurnTxt}>
+          {`Player ${isCross ? 'X' : 'O'}'s Turn`}
+        </Text>
+      </View>
 
-        </View>
-      ):(
-        <View style={[styles.playerINfo,isCross ? styles.playerX:styles.playerO]}
-        >
-          <Text style={styles.gameTurn} >Player {isCross? 'X':'O'}'s Turn</Text>
-        </View>
-      )}
 
+  {gameWinner ? (
+    // Player Info
+    <View style={[styles.playerInfo, gameWinner.includes('cross') ? styles.playerX : styles.playerO]}>
+      <Text style={styles.gameTurnTxt}>{gameWinner}</Text>
+    </View>
+  ) : null}
 
-      //Game Grid
-      <FlatList
-      numColumns={3}
-      data={gameState}
-      style={styles.grid}
-      renderItem={({item , index})=> (
-        <Pressable key={index}
+  {/* Game Grid */}
+  <FlatList
+    numColumns={3}
+    data={gameState}
+    style={styles.grid}
+    renderItem={({ item, index }) => (
+      <Pressable
+        key={index}
         style={styles.card}
-        onPress={()=> onChangeItem(index)}>
-          <Icons name={item}/>
+        onPress={() => handlePress(index)}
+      >
+        <Icon name={item} size={24} color="#000" />
+      </Pressable>
+    )}
+  />
 
-        </Pressable>
-      )} />
-
-      //game Action 
-      <Pressable  style={gameBtn}
-        onPress={reloadGame}>
+  {/* Game Action */}
+  <Pressable style={styles.gameBtn} onPress={reloadGame}>
         <Text style={styles.gameBtnText}>
-          {gameWinner ?'start new game':'reload the game '}
+          {gameWinner ? 'Start New Game' : 'Reload the Game'}
         </Text>
       </Pressable>
+
+      {/* Sound Toggle Button */}
+      <Pressable style={styles.gameBtn} onPress={toggleSound}>
+        <Text style={                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           styles.gameBtnText}>
+          {isSoundEnabled ? 'Disable Sound' : 'Enable Sound'}
+        </Text>
+      </Pressable>
+    
 
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
+  playerInfo: {
+    height: 56,
 
-  
-})
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    borderRadius: 4,
+    paddingVertical: 8,
+    marginVertical: 12,
+    marginHorizontal: 14,
+
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    shadowColor: '#333',
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+  },
+  gameTurnTxt: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  playerX: {
+    backgroundColor: '#38CC77',
+  },
+  playerO: {
+    backgroundColor: '#F7CD2E',
+  },
+  grid: {
+    margin: 12,
+  },
+  card: {
+    height: 100,
+    width: '33.33%',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  winnerInfo: {
+    borderRadius: 8,
+    backgroundColor: '#38CC77',
+
+    shadowOpacity: 0.1,
+  },
+  winnerTxt: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  gameBtn: {
+    alignItems: 'center',
+
+    padding: 10,
+    borderRadius: 8,
+    marginHorizontal: 36,
+    backgroundColor: '#8D3DAF',
+  },
+  gameBtnText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: '500',
+  },
+});
+
+export default App;

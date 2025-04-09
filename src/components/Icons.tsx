@@ -5,19 +5,21 @@ import { View, Text } from 'react-native'
 
 
 type IconProps = PropsWithChildren<{
-    name: string
+    name: string,
+    size:number
+    color:string
     
     }>
 
-const Icons: React.FC<IconProps> = ({ name }) => {
+const Icons: React.FC<IconProps> = ({ name, size, color }) => {
   switch (name) {
     case 'cross':
-      return <Icon name="times" size={30} color="#900" />
+      return <Icon name="times" size={size} color={color} />
     case 'circle':
-      return <Icon name="circle" size={30} color="#900" />
+      return <Icon name="circle" size={size} color={color} />
     default:
       return <Text>Unknown icon</Text>
   }
 }
 
-export default icons
+export default Icons
