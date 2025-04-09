@@ -124,8 +124,11 @@ function App() :J9SX.Element {
   };
   // Duplicate handlePress function removed
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex:1, backgroundColor: '#ccdad1' }}>
       <StatusBar />
+      <View style={styles.container}>
+        <Text style={styles.title}>Tic Tac Toe</Text>
+      </View>
       <View
         style={[
           styles.playerInfo,
@@ -169,7 +172,7 @@ function App() :J9SX.Element {
       </Pressable>
 
       {/* Sound Toggle Button */}
-      <Pressable style={styles.gameBtn} onPress={toggleSound}>
+      <Pressable style={styles.AddingTap} onPress={toggleSound}>
         <Text style={                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           styles.gameBtnText}>
           {isSoundEnabled ? 'Disable Sound' : 'Enable Sound'}
         </Text>
@@ -181,6 +184,49 @@ function App() :J9SX.Element {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#70a9a1',
+    width: 200,
+    
+    marginTop: 20,
+    
+    borderRadius: 8,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    shadowColor: '#333',
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 5,
+    marginHorizontal: 90,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#333',
+    
+    
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#000000',
+    textAlign: 'center',
+    
+    
+    textTransform: 'uppercase',
+    // textShadowColor: '#000000',
+    // textShadowOffset: { width: 1, height: 1 },
+    // textShadowRadius: 5,
+    textDecorationLine: 'none',
+    textDecorationStyle: 'dashed',
+    textDecorationColor: '#000000',
+    
+    textAlignVertical: 'center',
+   
+  },
   playerInfo: {
     height: 56,
 
@@ -207,13 +253,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   playerX: {
-    backgroundColor: '#38CC77',
+    backgroundColor: '#eb6424',
   },
   playerO: {
-    backgroundColor: '#F7CD2E',
+    backgroundColor: '#006466',
   },
   grid: {
     margin: 12,
+    marginTop:45
   },
   card: {
     height: 100,
@@ -224,6 +271,7 @@ const styles = StyleSheet.create({
 
     borderWidth: 1,
     borderColor: '#333',
+    
   },
   winnerInfo: {
     borderRadius: 8,
@@ -244,12 +292,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 36,
     backgroundColor: '#8D3DAF',
+    
   },
   gameBtnText: {
     fontSize: 18,
     color: '#FFFFFF',
-    fontWeight: '500',
+    fontWeight: '600',
   },
+  AddingTap:{
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 10,
+    marginHorizontal: 36,
+    marginTop: 15,
+    backgroundColor: '#284b63',
+    marginBottom: 70,
+    
+  }
 });
 
 export default App;
