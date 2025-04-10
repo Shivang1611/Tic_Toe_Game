@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, View,StatusBar, FlatList, Pressable } from 'react-native'
+import { RefreshControl,SafeAreaView, ScrollView, StyleSheet, Text, View,StatusBar, FlatList, Pressable } from 'react-native'
 import React, { useEffect } from 'react'
 import Snackbar from 'react-native-snackbar'
 import Icon from './components/Icons'
@@ -7,7 +7,7 @@ import Sound from 'react-native-sound';
 
 
 
-function App() :J9SX.Element {
+function App() :JSX.Element {
   const [sound] = useState(
     new Sound('touch.mp3', Sound.MAIN_BUNDLE, (error) => {
       if (error) {
@@ -40,10 +40,25 @@ function App() :J9SX.Element {
       playSound();
     }
   };
+  const[refresh , srtRefresh]=useState(false)
   const [isCross, setIsCross]=useState<boolean>(false)
   const [gameWinner,setGameWinner]=useState<string>("")
 
   const [gameState,setGameState]=useState(new Array(9).fill('empty',0,9))
+
+
+  const refreshGame=()=>{
+    srtRefresh(true)
+    setGameState(new Array(9).fill('empty',0,9))
+    setGameWinner("")
+    setIsCross(false)
+
+    setTimeout(()=>{
+      srtRefresh(false)
+    },2000)
+    
+
+  }
 
   const reloadGame=()=>{
     setGameState(new Array(9).fill('empty',0,9))
@@ -81,7 +96,7 @@ function App() :J9SX.Element {
     onChangeItem(index)
   };
 
-  // Clean up sound resources on unmount
+  
   useEffect(() => {
     return () => {
       tapSound.release();
@@ -122,10 +137,15 @@ function App() :J9SX.Element {
 
  
   };
-  // Duplicate handlePress function removed
+  
   return (
     <SafeAreaView style={{ flex:1, backgroundColor: '#ccdad1' }}>
       <StatusBar />
+        <ScrollView style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refresh} onRefresh={refreshGame} />
+        }>
+      
       <View style={styles.container}>
         <Text style={styles.title}>Tic Tac Toe</Text>
       </View>
@@ -177,6 +197,7 @@ function App() :J9SX.Element {
           {isSoundEnabled ? 'Disable Sound' : 'Enable Sound'}
         </Text>
       </Pressable>
+      </ScrollView>
     
 
     </SafeAreaView>

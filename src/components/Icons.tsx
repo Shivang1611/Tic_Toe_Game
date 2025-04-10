@@ -18,7 +18,7 @@ const Icons: React.FC<IconProps> = ({ name, size, color }) => {
     case 'circle':
       return <Icon name="circle" size={size} color={color} />
     default:
-      return <Text>Unknown icon</Text>
+      return <Text>  </Text>
   }
 }
 
